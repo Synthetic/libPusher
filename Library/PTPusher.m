@@ -15,7 +15,6 @@
 #import "PTBlockEventListener.h"
 #import "PTPusherErrors.h"
 
-
 NSURL *PTPusherConnectionURL(NSString *host, NSString *key, NSString *clientID, BOOL secure);
 
 NSString *const PTPusherEventReceivedNotification = @"PTPusherEventReceivedNotification";
@@ -44,6 +43,7 @@ NSURL *PTPusherConnectionURL(NSString *host, NSString *key, NSString *clientID, 
 /* These methods should only be called internally */
 - (void)subscribeWithAuthorization:(NSDictionary *)authData;
 - (void)unsubscribe;
+- (void)markAsUnsubscribed;
 @end
 
 #pragma mark -
@@ -207,10 +207,15 @@ NSURL *PTPusherConnectionURL(NSString *host, NSString *key, NSString *clientID, 
 
 - (void)sendEventNamed:(NSString *)name data:(id)data channel:(NSString *)channelName
 {
+  NSParameterAssert(name);
+  
   NSMutableDictionary *payload = [NSMutableDictionary dictionary];
   
   [payload setObject:name forKey:@"event"];
-  [payload setObject:data forKey:@"data"];
+  
+  if (data) {
+    [payload setObject:data forKey:@"data"];
+  }
   
   if (channelName) {
     [payload setObject:channelName forKey:@"channel"];
@@ -232,6 +237,9 @@ NSURL *PTPusherConnectionURL(NSString *host, NSString *key, NSString *clientID, 
 
 - (void)pusherConnectionDidDisconnect:(PTPusherConnection *)connection
 {
+  for (PTPusherChannel *channel in [channels allValues]) {
+    [channel markAsUnsubscribed];
+  }  
   if ([self.delegate respondsToSelector:@selector(pusher:connectionDidDisconnect:)]) {
     [self.delegate pusher:self connectionDidDisconnect:connection];
   }

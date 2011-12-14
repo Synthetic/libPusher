@@ -1367,7 +1367,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					arvm6,
+					armv6,
 					armv7,
 				);
 				COPY_PHASE_STRIP = NO;
@@ -1384,7 +1384,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					arvm6,
+					armv6,
 					armv7,
 				);
 				COPY_PHASE_STRIP = YES;
